@@ -1,9 +1,9 @@
-#include "button.h"
+#include "button.hpp"
 
-Button::Button()
-{
+Button::Button(int width, int height) :
+    ElemWindow(width, height) {
 
 }
 
-void Button::onClick(const sf::Vector2f &cords) {
+void Button::onClick() {
 }

@@ -1,6 +1,6 @@
-#include "windowmanager.h"
+#include "windowmanager.hpp"
 
-WindowManager::WindowManager()
-{
+WindowManager::WindowManager(int width, int height) :
+    ElemWindow(width, height) {
 
 }
