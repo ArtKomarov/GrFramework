@@ -15,6 +15,8 @@ public:
     // Clear and draw background
     void update() override;
 
+    void clear();
+
     // Check, if window != nullptr
     bool windowAvailable() const;
 

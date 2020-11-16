@@ -21,15 +21,18 @@ MainWindow::MainWindow(int width, int height,
 
     if(window_ == nullptr)
         return;
+
     glfwSetWindowSizeCallback(window_, glfwWindowSizeCallback);
 }
 
 void MainWindow::update() {
-    /* Render here */
-    glClear(GL_COLOR_BUFFER_BIT);
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window_);
+}
+
+void MainWindow::clear() {
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 bool MainWindow::windowAvailable() const {
