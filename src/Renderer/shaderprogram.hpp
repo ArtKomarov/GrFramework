@@ -7,8 +7,8 @@
 #include <GLFW/glfw3.h>
 
 class ShaderProgram {
-    bool m_isCompiled;
     GLuint m_ID;
+    bool   m_isCompiled;
 
     bool createShader(const std::string& source, const GLenum shaderType, GLuint& shaderID);
 
@@ -19,6 +19,8 @@ public:
     ShaderProgram(ShaderProgram&& sp) noexcept;
 
     ShaderProgram(const std::string& vertexShader, const std::string& fragmentShader);
+
+    ShaderProgram(const char* vertexPath, const char* fragmentPath);
 
     //Destructor
     ~ShaderProgram();

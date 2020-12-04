@@ -2,54 +2,68 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <SOIL/SOIL.h>
 
 #include "Renderer/shaderprogram.hpp"
+#include "Renderer/vertexarray.hpp"
+#include "Renderer/textureva.hpp"
 
 #include "mainwindow.hpp"
 
+const char* vertexShaderCode =
+                "#version 330 core\n"
+                "layout (location = 0) in vec3 position;\n"
+                "layout (location = 1) in vec3 color;\n"
+                "out vec3 vertexColor;\n"
+                "void main()\n"
+                "{\n"
+                "    gl_Position = vec4(position, 1.0);\n"
+                "    vertexColor = color;\n"
+                "}\n";
 
-// Triangle
-
-GLfloat trPoint[] = {
-     0.0f,  0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f
-};
-
-GLfloat trColor[] = {
-    1.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 1.0f
-};
-
-const char* vertexShader =
+const char* fragmentShaderCode =
         "#version 330 core\n"
-        "layout(location = 0) in vec3 vertex_position;"
-        "layout(location = 1) out vec3 vertex_color;"
-        "out vec3 color;"
+        "out vec4 fragColor;\n"
+        "in vec3 vertexColor;\n"
+        "void main()\n"
+        "{\n"
+        "    fragColor = vec4(vertexColor, 1.0f);\n"
+        "}\n";
+
+const char* texVertexShaderCode =
+        "#version 330 core\n"
+        "layout (location = 0) in vec3 position;"
+        "layout (location = 1) in vec3 color;"
+        "layout (location = 2) in vec2 texCoord;"
+        "out vec3 outColor;"
+        "out vec2 TexCoord;"
         "void main() {"
-        "    gl_Position = vec4(vertex_position, 1.0);"
-        "    color = vertex_color;"
+        "TexCoord = texCoord;"
+        "gl_Position = vec4(position, 1.0f);"
+        "outColor = color;"
         "}";
 
-const char* fragmentShader =
+const char* texFragmentShaderCode =
         "#version 330 core\n"
-        "out vec4 frag_color;"
-        "in vec3 color;"
-        "void main() {"
-        "    frag_color = vec4(color, 1.0);"
-        "}";
+        "in vec3 ourColor;\n"
+        "in vec2 TexCoord;\n"
+        "out vec4 color;\n"
+        "uniform sampler2D ourTexture;\n"
+        "void main()\n"
+        "{\n"
+        "    color = texture(ourTexture, TexCoord);\n"
+        "}\n";
+
 
 int main(void) {
-
     //----------------------Initialize the library----------------------//
     if (!glfwInit()) {
         std::cerr << "Can't init GLFW!" << std::endl;
         return -1;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     //------------------------------------------------------------------//
@@ -76,102 +90,132 @@ int main(void) {
     }
 
 
-    std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
-    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << "|||" << GL_VERSION_4_6 << std::endl;
+    std::cout << "Renderer: "       << glGetString(GL_RENDERER) << std::endl;
+    std::cout << "OpenGL version: " << glGetString(GL_VERSION)  << std::endl;
     //---------------------------------------------------------------------------//
 
-    glClearColor(1, 1, 1, 1); // initAfterGL_Loaded
+    mainWindow.init();
 
-    // Triangle
-//    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-//    glShaderSource(vs, 1, &vertexShader, nullptr);
-//    glCompileShader(vs);
+    std::string vertexShaderCodeStr(vertexShaderCode);
+    std::string fragmentShaderCodeStr(fragmentShaderCode);
 
-//    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-//    glShaderSource(fs, 1, &fragmentShader, nullptr);
-//    glCompileShader(fs);
-
-//    GLuint shader_program = glCreateProgram();
-//    glAttachShader(shader_program, vs);
-//    glAttachShader(shader_program, fs);
-//    glLinkProgram(shader_program);
-
-
-//    glDeleteShader(vs);
-//    glDeleteShader(fs);
-
-    std::string vertexShaderStr(vertexShader);
-    std::string fragmentShaderStr(fragmentShader);
-
-    Renderer::ShaderProgram shaderProgram(vertexShaderStr, fragmentShaderStr);
+    ShaderProgram shaderProgram(vertexShaderCodeStr, fragmentShaderCodeStr);
 
     if(!shaderProgram.isCompiled()) {
         std::cerr << "Can not create shader program!" << std::endl;
         return -1;
     }
 
-    GLuint points_vbo = 0;
-    glGenBuffers(1, &points_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(trPoint), trPoint, GL_STATIC_DRAW);
+    GLfloat trVertices[] = {
+         0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f
+    };
 
-    GLuint colors_vbo = 0;
-    glGenBuffers(1, &colors_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(trColor), trColor, GL_STATIC_DRAW);
+    VertexArray vao(trVertices);
 
-    GLuint vao = 0;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    //--------------------------------------Textures----------------------------------------//
+    // Load and create a texture
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
 
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-
-    // Rect
-    /*
-    GLuint tex;
-    glGenTextures(1, &tex);
-
-    glBindTexture(GL_TEXTURE_2D, tex);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    // Set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Set texture wrapping to GL_REPEAT (usually basic wrapping method)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    // Border color
-    float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
-
+    // Set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    // Black/white checkerboard
-    float pixels[] = {
-        0.0f, 0.0f, 0.0f,   1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,   0.0f, 0.0f, 0.0f
+    // Load image, create texture and generate mipmaps
+    int width, height;
+    unsigned char* image = SOIL_load_image("../src/FinishScreen.jpg", &width, &height, 0, SOIL_LOAD_RGB);
+
+    if(!image)
+        return -1;
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    SOIL_free_image_data(image);
+
+    glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
+
+
+
+    GLfloat texVertices[] = {
+        // Positions          // Colors           // Texture Coords
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f,  // Top Left
+        0.5f,   0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Top Right
+        0.5f,  -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Bottom Right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f // Bottom Left
     };
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, pixels);
-    */
+
+    GLuint texIndices[] = {
+        0, 1, 2, // First Triangle
+        0, 2, 3  // Second Triangle
+    };
+
+    glVertexAttribPointer(2, 2, GL_FLOAT,GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(2);
+
+    std::string texVertexShaderCodeStr(texVertexShaderCode);
+    std::string texFragmentShaderCodeStr(texFragmentShaderCode);
+
+    ShaderProgram shProgForTexture("../src/Renderer/Shaders/texture_ex.vs", "../src/Renderer/Shaders/texture_ex.fs");
+    //ShaderProgram shProgForTexture(texVertexShaderCodeStr, texFragmentShaderCodeStr);
+
+    TextureVA textureVAO(texVertices, texIndices);
+
+//    GLuint VBO, VAO, EBO;
+//    glGenVertexArrays(1, &VAO);
+//    glGenBuffers(1, &VBO);
+//    glGenBuffers(1, &EBO);
+
+//    glBindVertexArray(VAO);
+
+//    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(texVertices), texVertices, GL_STATIC_DRAW);
+
+//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(texIndices), texIndices, GL_STATIC_DRAW);
+
+//    // Position attribute
+//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+//    glEnableVertexAttribArray(0);
+//    // Color attribute
+//    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+//    glEnableVertexAttribArray(1);
+//    // TexCoord attribute
+//    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+//    glEnableVertexAttribArray(2);
+
+//    glBindVertexArray(0); // Unbind VAO
+
+
 
 
     /* Loop until the user closes the window */
     while (!mainWindow.shouldClose()) {
-        /* Render here */
-        //glClear(GL_COLOR_BUFFER_BIT);
-
-        /* Swap front and back buffers */
-        //glfwSwapBuffers(window);
-
         mainWindow.clear();
 
         shaderProgram.use();
-        glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        //vao.bind();
+        //vao.draw();
+
+        // Bind Texture
+        glBindTexture(GL_TEXTURE_2D, texture);
+
+        // Activate shader
+        shProgForTexture.use();
+
+        // Draw texture
+        textureVAO.draw();
+//        glBindVertexArray(VAO);
+//        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+//        glBindVertexArray(0);
 
         mainWindow.update();
 

@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include "shaderprogram.hpp"
 
@@ -28,7 +30,6 @@ bool ShaderProgram::createShader(const std::string &source,
 }
 
 ShaderProgram::ShaderProgram(ShaderProgram &&sp) noexcept {
-    glDeleteProgram(m_ID);
     m_ID = sp.m_ID;
     m_isCompiled = sp.m_isCompiled;
 
@@ -37,7 +38,9 @@ ShaderProgram::ShaderProgram(ShaderProgram &&sp) noexcept {
 }
 
 ShaderProgram::ShaderProgram(const std::string &vertexShader,
-                                       const std::string &fragmentShader) {
+                                       const std::string &fragmentShader) :
+    m_ID(0),
+    m_isCompiled(false) {
 
     GLuint vertexShaderID;
 
@@ -74,6 +77,47 @@ ShaderProgram::ShaderProgram(const std::string &vertexShader,
 
     glDeleteShader(vertexShaderID);
     glDeleteShader(fragmentShaderID);
+}
+
+ShaderProgram::ShaderProgram(const char *vertexPath, const char *fragmentPath) {
+
+    // Get code from filePath
+    std::string vertexCode;
+    std::string fragmentCode;
+
+    std::ifstream vShaderFile;
+    std::ifstream fShaderFile;
+
+    // Make sure ifstream objects can throw exceptions
+    vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+    try {
+        vShaderFile.open(vertexPath);
+        fShaderFile.open(fragmentPath);
+
+        std::stringstream vShaderStream, fShaderStream;
+
+        // Read data into sstreams
+        vShaderStream << vShaderFile.rdbuf();
+        fShaderStream << fShaderFile.rdbuf();
+
+        vShaderFile.close();
+        fShaderFile.close();
+
+        // sstream -> GLchar*
+        vertexCode   = vShaderStream.str();
+        fragmentCode = fShaderStream.str();
+    }
+    catch (const std::ifstream::failure& e) {
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << e.what() << std::endl;
+    }
+
+    new (this) ShaderProgram(vertexCode, fragmentCode);
+
+
+    //------------------- TODO ----------------------
+
 }
 
 ShaderProgram::~ShaderProgram() {
