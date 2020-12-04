@@ -8,6 +8,7 @@
 #include "Renderer/vertexarray.hpp"
 #include "Renderer/textureva.hpp"
 
+#include "texture.hpp"
 #include "mainwindow.hpp"
 
 const char* vertexShaderCode =
@@ -28,30 +29,6 @@ const char* fragmentShaderCode =
         "void main()\n"
         "{\n"
         "    fragColor = vec4(vertexColor, 1.0f);\n"
-        "}\n";
-
-const char* texVertexShaderCode =
-        "#version 330 core\n"
-        "layout (location = 0) in vec3 position;"
-        "layout (location = 1) in vec3 color;"
-        "layout (location = 2) in vec2 texCoord;"
-        "out vec3 outColor;"
-        "out vec2 TexCoord;"
-        "void main() {"
-        "TexCoord = texCoord;"
-        "gl_Position = vec4(position, 1.0f);"
-        "outColor = color;"
-        "}";
-
-const char* texFragmentShaderCode =
-        "#version 330 core\n"
-        "in vec3 ourColor;\n"
-        "in vec2 TexCoord;\n"
-        "out vec4 color;\n"
-        "uniform sampler2D ourTexture;\n"
-        "void main()\n"
-        "{\n"
-        "    color = texture(ourTexture, TexCoord);\n"
         "}\n";
 
 
@@ -115,32 +92,32 @@ int main(void) {
     VertexArray vao(trVertices);
 
     //--------------------------------------Textures----------------------------------------//
-    // Load and create a texture
-    GLuint texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
+//    // Load and create a texture
+//    GLuint texture;
+//    glGenTextures(1, &texture);
+//    glBindTexture(GL_TEXTURE_2D, texture); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
 
-    // Set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//    // Set the texture wrapping parameters
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Set texture wrapping to GL_REPEAT (usually basic wrapping method)
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    // Set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//    // Set texture filtering parameters
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    // Load image, create texture and generate mipmaps
-    int width, height;
-    unsigned char* image = SOIL_load_image("../src/FinishScreen.jpg", &width, &height, 0, SOIL_LOAD_RGB);
+//    // Load image, create texture and generate mipmaps
+//    int width, height;
+//    unsigned char* image = SOIL_load_image("../src/FinishScreen.jpg", &width, &height, 0, SOIL_LOAD_RGB);
 
-    if(!image)
-        return -1;
+//    if(!image)
+//        return -1;
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+//    glGenerateMipmap(GL_TEXTURE_2D);
 
-    SOIL_free_image_data(image);
+//    SOIL_free_image_data(image);
 
-    glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
+//    glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
 
 
 
@@ -152,48 +129,17 @@ int main(void) {
         -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f // Bottom Left
     };
 
-    GLuint texIndices[] = {
-        0, 1, 2, // First Triangle
-        0, 2, 3  // Second Triangle
-    };
+//    GLuint texIndices[] = {
+//        0, 1, 2, // First Triangle
+//        0, 2, 3  // Second Triangle
+//    };
 
-    glVertexAttribPointer(2, 2, GL_FLOAT,GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(2);
+//    ShaderProgram shProgForTexture("../src/Renderer/Shaders/texture_ex.vs", "../src/Renderer/Shaders/texture_ex.fs");
+//    //ShaderProgram shProgForTexture(texVertexShaderCodeStr, texFragmentShaderCodeStr);
 
-    std::string texVertexShaderCodeStr(texVertexShaderCode);
-    std::string texFragmentShaderCodeStr(texFragmentShaderCode);
+//    TextureVA textureVAO(texVertices, texIndices);
 
-    ShaderProgram shProgForTexture("../src/Renderer/Shaders/texture_ex.vs", "../src/Renderer/Shaders/texture_ex.fs");
-    //ShaderProgram shProgForTexture(texVertexShaderCodeStr, texFragmentShaderCodeStr);
-
-    TextureVA textureVAO(texVertices, texIndices);
-
-//    GLuint VBO, VAO, EBO;
-//    glGenVertexArrays(1, &VAO);
-//    glGenBuffers(1, &VBO);
-//    glGenBuffers(1, &EBO);
-
-//    glBindVertexArray(VAO);
-
-//    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(texVertices), texVertices, GL_STATIC_DRAW);
-
-//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(texIndices), texIndices, GL_STATIC_DRAW);
-
-//    // Position attribute
-//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-//    glEnableVertexAttribArray(0);
-//    // Color attribute
-//    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-//    glEnableVertexAttribArray(1);
-//    // TexCoord attribute
-//    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-//    glEnableVertexAttribArray(2);
-
-//    glBindVertexArray(0); // Unbind VAO
-
-
+    Texture tex(texVertices, "../src/FinishScreen.jpg");
 
 
     /* Loop until the user closes the window */
@@ -205,17 +151,16 @@ int main(void) {
         //vao.bind();
         //vao.draw();
 
-        // Bind Texture
-        glBindTexture(GL_TEXTURE_2D, texture);
+        tex.draw();
 
-        // Activate shader
-        shProgForTexture.use();
+//        // Bind Texture
+//        glBindTexture(GL_TEXTURE_2D, texture);
 
-        // Draw texture
-        textureVAO.draw();
-//        glBindVertexArray(VAO);
-//        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-//        glBindVertexArray(0);
+//        // Activate shader
+//        shProgForTexture.use();
+
+//        // Draw texture
+//        textureVAO.draw();
 
         mainWindow.update();
 

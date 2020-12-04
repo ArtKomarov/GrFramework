@@ -25,6 +25,10 @@ MainWindow::MainWindow(int width, int height,
     glfwSetWindowSizeCallback(window_, glfwWindowSizeCallback);
 }
 
+void MainWindow::init() {
+    glClearColor(1, 1, 0, 1);
+}
+
 void MainWindow::update() {
 
     /* Swap front and back buffers */
@@ -42,6 +46,13 @@ bool MainWindow::windowAvailable() const {
         return false;
 }
 
+bool MainWindow::checkWindow(const GLFWwindow* window) const {
+    if(window == window_)
+        return true;
+    else
+        return false;
+}
+
 int MainWindow::shouldClose() const {
     return glfwWindowShouldClose(window_);
 }
@@ -52,8 +63,12 @@ void MainWindow::makeContextCurrent() {
 
 void glfwWindowSizeCallback(GLFWwindow* window, int width, int height) {
     glfwMakeContextCurrent(window);
-    mainWindow.setWidth(width);
-    std::cout << "RESIZE!!!!!" << std::endl;
-    mainWindow.setHeigth(height);
-    glViewport(0, 0, width, height);
+
+    if(mainWindow.checkWindow(window)) {
+        mainWindow.setWidth(width);
+        mainWindow.setHeigth(height);
+
+        std::cout << __PRETTY_FUNCTION__ << std::endl;
+        glViewport(0, 0, width, height);
+    }
 }

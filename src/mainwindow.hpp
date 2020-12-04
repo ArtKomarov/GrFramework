@@ -12,6 +12,9 @@ public:
                GLFWmonitor* monitor,
                GLFWwindow* share);
 
+    // Init after load glad
+    void init();
+
     // Clear and draw background
     void update() override;
 
@@ -19,6 +22,8 @@ public:
 
     // Check, if window != nullptr
     bool windowAvailable() const;
+
+    bool checkWindow(const GLFWwindow *window) const;
 
     // Should window close now?
     int shouldClose() const;
