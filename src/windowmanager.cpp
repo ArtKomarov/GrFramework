@@ -1,6 +1,10 @@
 #include "windowmanager.hpp"
 
-WindowManager::WindowManager(int width, int height) :
-    ElemWindow(width, height) {
+WindowManager::WindowManager() :
+    ElemWidget() {
+}
+
+WindowManager::WindowManager(const GLfloat *vertices, const char *texPath) :
+    ElemWidget(vertices, texPath) {
 
 }

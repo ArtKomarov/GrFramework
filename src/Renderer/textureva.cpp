@@ -3,11 +3,11 @@
 #include "textureva.hpp"
 
 TextureVA::TextureVA(TextureVA &&tvao) {
-    vao_    = tvao.vao_;
+    vao_      = tvao.vao_;
     tvao.vao_ = 0;
 }
 
-TextureVA::TextureVA(GLfloat *vertices, GLuint *texIndices) {
+TextureVA::TextureVA(const GLfloat *vertices, const GLuint *texIndices) {
     //GLuint VBO, EBO;
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &VBO_);
@@ -43,8 +43,6 @@ TextureVA &TextureVA::operator = (TextureVA &&va) {
 
 void TextureVA::draw() {
     glBindVertexArray(vao_);
-
-    std::cout << __PRETTY_FUNCTION__ << "VAO: " << vao_ << std::endl;
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

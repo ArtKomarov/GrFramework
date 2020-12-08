@@ -7,10 +7,11 @@ class MainWindow final : public WindowManager {
     GLFWwindow* window_;
 
 public:
-    MainWindow(int width, int height,
-               const char* title,
+    MainWindow(int          width,
+               int          height,
+               const char*  title,
                GLFWmonitor* monitor,
-               GLFWwindow* share);
+               GLFWwindow*  share);
 
     // Init after load glad
     void init();

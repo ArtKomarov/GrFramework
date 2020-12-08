@@ -4,14 +4,15 @@
 
 MainWindow mainWindow(500, 500, "Main window", nullptr, nullptr);
 
-MainWindow::MainWindow(int width, int height,
-                       const char* title,
+MainWindow::MainWindow(int          width,
+                       int          height,
+                       const char*  title,
                        GLFWmonitor* monitor,
-                       GLFWwindow* share) :
-    WindowManager(width, height) {
+                       GLFWwindow*  share) :
+    WindowManager() {
 
 
-    //----------------------Initialize the library----------------------//
+    // Initialize the library
     if (!glfwInit()) {
         std::cerr << "Can't init GLFW!" << std::endl;
         return;

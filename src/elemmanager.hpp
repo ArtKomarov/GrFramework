@@ -5,16 +5,16 @@
 
 //#include <SFML/Graphics.hpp>
 
-#include "elemwindow.hpp"
+#include "elemwidget.hpp"
 
 class ElemManager {
-    std::vector<ElemWindow*> windows_;
+    std::vector<ElemWidget*> windows_;
 public:
     ElemManager();
 
     void handleEvent();
 
-    void regWindow(ElemWindow *window);
+    void regWindow(ElemWidget *window);
 
 };
 

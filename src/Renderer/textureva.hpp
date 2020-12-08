@@ -17,7 +17,7 @@ public:
 
     TextureVA(TextureVA&& tvao);
 
-    TextureVA(GLfloat *vertices, GLuint *texIndices);
+    TextureVA(const GLfloat *vertices, const GLuint *texIndices);
 
     // Operators
     TextureVA& operator = (TextureVA& va) = delete;

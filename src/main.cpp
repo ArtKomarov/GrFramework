@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <SOIL/SOIL.h>
+#include <glm/vec2.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Renderer/shaderprogram.hpp"
 #include "Renderer/vertexarray.hpp"
@@ -10,6 +12,7 @@
 
 #include "texture.hpp"
 #include "mainwindow.hpp"
+#include "button.hpp"
 
 const char* vertexShaderCode =
                 "#version 330 core\n"
@@ -31,6 +34,14 @@ const char* fragmentShaderCode =
         "    fragColor = vec4(vertexColor, 1.0f);\n"
         "}\n";
 
+void checkOnclickFunc(ElemWidget* target) {
+    GLfloat transformColor[3] = {
+        0.5, 0.5, 0.5
+    };
+
+    (*target).changeColor(static_cast<const void *>(transformColor));
+
+}
 
 int main(void) {
     //----------------------Initialize the library----------------------//
@@ -71,6 +82,8 @@ int main(void) {
     std::cout << "OpenGL version: " << glGetString(GL_VERSION)  << std::endl;
     //---------------------------------------------------------------------------//
 
+    glm::ivec2 g_WindowSize(640, 480);
+
     mainWindow.init();
 
     std::string vertexShaderCodeStr(vertexShaderCode);
@@ -92,54 +105,33 @@ int main(void) {
     VertexArray vao(trVertices);
 
     //--------------------------------------Textures----------------------------------------//
-//    // Load and create a texture
-//    GLuint texture;
-//    glGenTextures(1, &texture);
-//    glBindTexture(GL_TEXTURE_2D, texture); // All upcoming GL_TEXTURE_2D operations now have effect on this texture object
-
-//    // Set the texture wrapping parameters
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Set texture wrapping to GL_REPEAT (usually basic wrapping method)
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-//    // Set texture filtering parameters
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-//    // Load image, create texture and generate mipmaps
-//    int width, height;
-//    unsigned char* image = SOIL_load_image("../src/FinishScreen.jpg", &width, &height, 0, SOIL_LOAD_RGB);
-
-//    if(!image)
-//        return -1;
-
-//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-//    glGenerateMipmap(GL_TEXTURE_2D);
-
-//    SOIL_free_image_data(image);
-
-//    glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
-
-
 
     GLfloat texVertices[] = {
         // Positions          // Colors           // Texture Coords
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f,  // Top Left
         0.5f,   0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Top Right
         0.5f,  -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Bottom Right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f // Bottom Left
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Bottom Left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // Top Left
     };
 
-//    GLuint texIndices[] = {
-//        0, 1, 2, // First Triangle
-//        0, 2, 3  // Second Triangle
-//    };
+    Texture tex(texVertices, "../src/BoxTexture.png");
+    //--------------------------------------------------------------------------------------//
 
-//    ShaderProgram shProgForTexture("../src/Renderer/Shaders/texture_ex.vs", "../src/Renderer/Shaders/texture_ex.fs");
-//    //ShaderProgram shProgForTexture(texVertexShaderCodeStr, texFragmentShaderCodeStr);
+    //------------------------------------Button-------------------------------------//
 
-//    TextureVA textureVAO(texVertices, texIndices);
+    GLfloat butVertices[] = {
+        // Positions         // Colors            // Texture Coords
+        0.8f, 0.8f, 0.0f,    1.0f, 1.0f, 1.0f,    1.0f, 1.0f, // Top Right
+        0.8f, 0.6f, 0.0f,    1.0f, 1.0f, 1.0f,    1.0f, 0.0f, // Bottom Right
+        0.6f, 0.6f, 0.0f,    1.0f, 1.0f, 1.0f,    0.0f, 0.0f, // Bottom Left
+        0.6f, 0.8f, 0.0f,    1.0f, 1.0f, 1.0f,    0.0f, 1.0f  // Top Left
+    };
 
-    Texture tex(texVertices, "../src/FinishScreen.jpg");
+    ElemWidget* el = nullptr;
+
+    Button but(butVertices, "../src/BoxTexture.png", el, checkOnclickFunc);
+
+    //-------------------------------------------------------------------------------//
 
 
     /* Loop until the user closes the window */
@@ -148,19 +140,16 @@ int main(void) {
 
         shaderProgram.use();
 
-        //vao.bind();
-        //vao.draw();
+        vao.bind();
+        vao.draw();
+
+        glm::mat4 trans(1.0f);
+        trans = glm::translate (trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate    (trans, (GLfloat)glfwGetTime() * 1.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+
+        tex.setTransformPos(trans);
 
         tex.draw();
-
-//        // Bind Texture
-//        glBindTexture(GL_TEXTURE_2D, texture);
-
-//        // Activate shader
-//        shProgForTexture.use();
-
-//        // Draw texture
-//        textureVAO.draw();
 
         mainWindow.update();
 

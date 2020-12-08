@@ -1,7 +1,6 @@
 #include "elemmanager.hpp"
 
-ElemManager::ElemManager()
-{
+ElemManager::ElemManager() {
 
 }
 
@@ -12,6 +11,6 @@ void ElemManager::handleEvent() {
     }
 }
 
-void ElemManager::regWindow(ElemWindow *window) {
+void ElemManager::regWindow(ElemWidget *window) {
     windows_.push_back(window);
 }

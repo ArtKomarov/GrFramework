@@ -30,17 +30,17 @@ bool ShaderProgram::createShader(const std::string &source,
 }
 
 ShaderProgram::ShaderProgram(ShaderProgram &&sp) noexcept {
-    m_ID = sp.m_ID;
-    m_isCompiled = sp.m_isCompiled;
+    program_ = sp.program_;
+    isCompiled_ = sp.isCompiled_;
 
-    sp.m_ID = 0;
-    sp.m_isCompiled = false;
+    sp.program_ = 0;
+    sp.isCompiled_ = false;
 }
 
 ShaderProgram::ShaderProgram(const std::string &vertexShader,
                                        const std::string &fragmentShader) :
-    m_ID(0),
-    m_isCompiled(false) {
+    program_(0),
+    isCompiled_(false) {
 
     GLuint vertexShaderID;
 
@@ -56,23 +56,23 @@ ShaderProgram::ShaderProgram(const std::string &vertexShader,
         return;
     }
 
-    m_ID = glCreateProgram();
+    program_ = glCreateProgram();
 
-    glAttachShader(m_ID, vertexShaderID);
-    glAttachShader(m_ID, fragmentShaderID);
-    glLinkProgram(m_ID);
+    glAttachShader(program_, vertexShaderID);
+    glAttachShader(program_, fragmentShaderID);
+    glLinkProgram(program_);
 
     GLint success;
-    glGetProgramiv(m_ID, GL_LINK_STATUS, &success);
+    glGetProgramiv(program_, GL_LINK_STATUS, &success);
 
     if(!success) {
         GLchar infoLog[1024];
-        glGetShaderInfoLog(m_ID, 1024, nullptr, infoLog);
+        glGetShaderInfoLog(program_, 1024, nullptr, infoLog);
 
         std::cerr << "Error: Shader: link time error:\n" << infoLog << std::endl;
         return;
     } else {
-        m_isCompiled = true;
+        isCompiled_ = true;
     }
 
     glDeleteShader(vertexShaderID);
@@ -121,7 +121,7 @@ ShaderProgram::ShaderProgram(const char *vertexPath, const char *fragmentPath) {
 }
 
 ShaderProgram::~ShaderProgram() {
-    glDeleteProgram(m_ID);
+    glDeleteProgram(program_);
 }
 
 ShaderProgram &ShaderProgram::operator = (ShaderProgram &&sp) noexcept {
@@ -130,9 +130,13 @@ ShaderProgram &ShaderProgram::operator = (ShaderProgram &&sp) noexcept {
 }
 
 bool ShaderProgram::isCompiled() const {
-    return m_isCompiled;
+    return isCompiled_;
+}
+
+GLuint ShaderProgram::getUniformLocation(const char *uniformName) {
+    return glGetUniformLocation(program_, uniformName);
 }
 
 void ShaderProgram::use() const {
-    glUseProgram(m_ID);
+    glUseProgram(program_);
 }

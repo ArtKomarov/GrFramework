@@ -7,8 +7,8 @@
 #include <GLFW/glfw3.h>
 
 class ShaderProgram {
-    GLuint m_ID;
-    bool   m_isCompiled;
+    GLuint program_;
+    bool   isCompiled_;
 
     bool createShader(const std::string& source, const GLenum shaderType, GLuint& shaderID);
 
@@ -31,6 +31,8 @@ public:
     ShaderProgram& operator = (ShaderProgram &&sp) noexcept;
 
     bool isCompiled() const;
+
+    GLuint getUniformLocation(const char* uniformName);
 
     void use() const;
 };
