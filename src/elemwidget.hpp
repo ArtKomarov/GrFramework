@@ -7,16 +7,19 @@
 #include <GLFW/glfw3.h>
 
 #include "texture.hpp"
+#include "event.hpp"
+
+namespace GrFramework {
 
 class ElemWidget {
     Texture* texture_;
 
     bool isHidden_;
 
-    int posX;
-    int poxY;
-    int width_;
-    int height_;
+    double posX_;
+    double posY_;
+    double width_;
+    double height_;
 
 protected:
     /// Texture functions
@@ -26,17 +29,17 @@ protected:
 
     void texSetTransformPos(const glm::mat4& matrix);
 public:
-    ElemWidget();
+    ElemWidget(double posX, double posY, double width, double height);
     ElemWidget(const GLfloat *vertices, const char *texPath);
 
-    virtual void draw();
+    virtual void draw() const;
     virtual void update();
     virtual bool isHidden() const;
 
     virtual bool testClick() const;
-    virtual bool testEvent() const;
+    virtual bool testEvent(const Event &event) const;
 
-    virtual void handleEvent();
+    virtual void processEvent(const Event &event);
 
     /// Reactions on events
     virtual void onClick();
@@ -55,10 +58,18 @@ public:
 
 
     /// Setters
-    void setWidth(int width);
+    void setWidth (int width);
     void setHeigth(int height);
+
+    /// Getters
+    double getPosX  () const;
+    double getPosY  () const;
+    double getWidth () const;
+    double getHeigth() const;
 
     virtual ~ElemWidget();
 };
+
+}
 
 #endif // ELEMWIDGET_H

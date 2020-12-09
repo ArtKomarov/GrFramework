@@ -4,6 +4,8 @@
 
 #include "shaderprogram.hpp"
 
+namespace GrFramework {
+
 bool ShaderProgram::createShader(const std::string &source,
                                            const GLenum shaderType, GLuint &shaderID) {
 
@@ -139,4 +141,6 @@ GLuint ShaderProgram::getUniformLocation(const char *uniformName) {
 
 void ShaderProgram::use() const {
     glUseProgram(program_);
+}
+
 }

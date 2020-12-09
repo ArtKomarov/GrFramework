@@ -3,9 +3,13 @@
 
 #include "elemwidget.hpp"
 
+namespace GrFramework {
+
 class Slider : public ElemWidget {
 public:
-    Slider();
+    Slider(double posX, double posY, double width, double height);
 };
+
+}
 
 #endif // SLIDER_HPP

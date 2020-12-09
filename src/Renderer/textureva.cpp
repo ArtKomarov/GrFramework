@@ -2,6 +2,8 @@
 
 #include "textureva.hpp"
 
+namespace GrFramework {
+
 TextureVA::TextureVA(TextureVA &&tvao) {
     vao_      = tvao.vao_;
     tvao.vao_ = 0;
@@ -47,4 +49,6 @@ void TextureVA::draw() {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
+}
+
 }

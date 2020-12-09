@@ -9,6 +9,8 @@
 #include "Renderer/shaderprogram.hpp"
 #include "Renderer/textureva.hpp"
 
+namespace GrFramework {
+
 enum class transformObj {
     COLOR,
     POS,
@@ -48,5 +50,7 @@ public:
 
     void draw();
 };
+
+}
 
 #endif // TEXTURE_HPP

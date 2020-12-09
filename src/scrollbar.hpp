@@ -5,12 +5,16 @@
 #include "button.hpp"
 #include "slider.hpp"
 
-class ScrollBar : public WindowManager {
+namespace GrFramework {
+
+class ScrollBar : public ElemManager {
     Slider slider_;
     Button but1_;
     Button but2_;
 public:
-    ScrollBar();
+    ScrollBar(double *sliderParams, double *butParams1, double *butParams2);
 };
+
+}
 
 #endif // SCROLLBAR_HPP

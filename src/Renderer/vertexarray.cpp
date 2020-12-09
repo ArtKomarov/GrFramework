@@ -1,5 +1,7 @@
 #include "vertexarray.hpp"
 
+namespace GrFramework {
+
 const int verArrayLength = 18;
 
 VertexArray::VertexArray(VertexArray &&va) {
@@ -42,4 +44,6 @@ void VertexArray::draw() {
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glBindVertexArray(0);
+}
+
 }

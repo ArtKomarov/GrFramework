@@ -5,6 +5,8 @@
 
 #include "texture.hpp"
 
+namespace GrFramework {
+
 GLuint defTextureIndices_[] = {
     0, 1, 3, // First Triangle
     1, 2, 3  // Second Triangle
@@ -95,4 +97,6 @@ void Texture::draw() {
     this->transformTexCoords();
 
     vao_.draw();
+}
+
 }

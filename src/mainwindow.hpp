@@ -3,6 +3,8 @@
 
 #include "windowmanager.hpp"
 
+namespace GrFramework {
+
 class MainWindow final : public WindowManager {
     GLFWwindow* window_;
 
@@ -36,5 +38,7 @@ public:
 void glfwWindowSizeCallback(GLFWwindow *window, int width, int height);
 
 extern MainWindow mainWindow;
+
+}
 
 #endif // MAINWINDOW_HPP

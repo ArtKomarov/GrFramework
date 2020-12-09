@@ -3,6 +3,8 @@
 
 #include "elemwidget.hpp"
 
+namespace GrFramework {
+
 class Button : public ElemWidget {
     ElemWidget* target_;
 
@@ -11,6 +13,8 @@ class Button : public ElemWidget {
 
 public:
     Button(ElemWidget* target,
+           double posX,  double posY,
+           double width, double height,
            void (* const onClickFunc)(ElemWidget* target) = nullptr,
            void (* const onReleaseFunc)(ElemWidget* target) = nullptr);
 
@@ -26,9 +30,15 @@ public:
     /// Set OnRelease function
     void setOnReleaseFunc(void (* const onReleaseFunc)(ElemWidget* target));
 
+    bool testEvent(const Event &event) const override;
+
+    void processEvent(const Event &event) override;
+
     void onClick() override;
 
     void onRelease() override;
 };
+
+}
 
 #endif // BUTTON_H

@@ -1,5 +1,7 @@
 #include "elemwidget.hpp"
 
+namespace GrFramework {
+
 // Proteted texture functions
 void ElemWidget::texSetTransformColor(const glm::vec3 &vec) {
     texture_->setTransformColor(vec);
@@ -14,16 +16,24 @@ void ElemWidget::texSetTransformPos(const glm::mat4 &matrix) {
 }
 
 // Constructors
-ElemWidget::ElemWidget() :
-    texture_(nullptr),
-    isHidden_(false) {}
+ElemWidget::ElemWidget(double posX, double posY, double width, double height) :
+    texture_  (nullptr),
+    isHidden_ (false),
+    posX_     (posX),
+    posY_     (posY),
+    width_    (width),
+    height_   (height) {}
 
 ElemWidget::ElemWidget(const GLfloat *vertices, const char *texPath) :
-    texture_(new Texture(vertices, texPath)),
-    isHidden_(false) {}
+    texture_  (new Texture(vertices, texPath)),
+    isHidden_ (false),
+    posX_     (static_cast<double>(vertices[8 * 2])),
+    posY_     (static_cast<double>(vertices[8 * 2 + 1])),
+    width_    (static_cast<double>(vertices[8 * 1] - vertices[8 * 2])),
+    height_   (static_cast<double>(vertices[8 * 3 + 1] - vertices[8 * 2 + 1])) {}
 
 // Draw texture if exists
-void ElemWidget::draw() {
+void ElemWidget::draw() const {
     if(texture_) {
         texture_->draw();
     }
@@ -39,11 +49,11 @@ bool ElemWidget::testClick() const {
     return false;
 }
 
-bool ElemWidget::testEvent() const {
+bool ElemWidget::testEvent(const Event& event) const {
     return false;
 }
 
-void ElemWidget::handleEvent() {}
+void ElemWidget::processEvent(const Event& event) {}
 
 void ElemWidget::onClick() {}
 
@@ -76,6 +86,24 @@ void ElemWidget::setHeigth(int height) {
     height_ = height;
 }
 
+double ElemWidget::getPosX() const {
+    return posX_;
+}
+
+double ElemWidget::getPosY() const {
+    return posY_;
+}
+
+double ElemWidget::getWidth() const {
+    return width_;
+}
+
+double ElemWidget::getHeigth() const {
+    return height_;
+}
+
 ElemWidget::~ElemWidget() {
     delete texture_;
+}
+
 }

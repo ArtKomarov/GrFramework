@@ -4,6 +4,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+namespace GrFramework {
+
 class TextureVA {
     GLuint vao_;
     GLuint VBO_;
@@ -26,5 +28,7 @@ public:
 
     void draw();
 };
+
+}
 
 #endif // TEXTUREVA_HPP

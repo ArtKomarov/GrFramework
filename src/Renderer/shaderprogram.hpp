@@ -6,6 +6,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+namespace GrFramework {
+
 class ShaderProgram {
     GLuint program_;
     bool   isCompiled_;
@@ -37,5 +39,6 @@ public:
     void use() const;
 };
 
+}
 
 #endif //SHADER_PROGRAM_HPP

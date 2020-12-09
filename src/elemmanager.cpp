@@ -1,16 +1,39 @@
+#include <iostream>
+
 #include "elemmanager.hpp"
+
+namespace GrFramework {
 
 ElemManager::ElemManager() {
 
 }
 
-void ElemManager::handleEvent() {
-    for(auto window : windows_) {
-        if(window->testEvent())
-            window->handleEvent();
+void ElemManager::handleEvents() {
+    Event* event;
+
+    while(!EventQueue.empty()) {
+
+        event = EventQueue.front();
+
+        EventQueue.pop();
+
+        std::cout << __PRETTY_FUNCTION__ << std::endl;
+
+        for(auto &widget : widgets_) {
+            if(widget->testEvent(*event))
+                widget->processEvent(*event);
+        }
     }
 }
 
-void ElemManager::regWindow(ElemWidget *window) {
-    windows_.push_back(window);
+void ElemManager::regWidget(ElemWidget *widget) {
+    widgets_.push_back(widget);
+}
+
+void ElemManager::drawWidgets() const {
+    for(auto &widget : widgets_) {
+        widget->draw();
+    }
+}
+
 }

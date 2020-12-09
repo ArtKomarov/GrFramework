@@ -34,7 +34,10 @@ const char* fragmentShaderCode =
         "    fragColor = vec4(vertexColor, 1.0f);\n"
         "}\n";
 
-void checkOnclickFunc(ElemWidget* target) {
+void checkOnclickFunc(GrFramework::ElemWidget* target) {
+    if(target == nullptr)
+        return;
+
     GLfloat transformColor[3] = {
         0.5, 0.5, 0.5
     };
@@ -60,14 +63,14 @@ int main(void) {
     //MainWindow mainWindow(400, 400, "Main window", nullptr, nullptr);
 
     //GLFWwindow* window = glfwCreateWindow(400, 400, "Main window", nullptr, nullptr);
-    if (!mainWindow.windowAvailable()) {
+    if (!GrFramework::mainWindow.windowAvailable()) {
         std::cerr << "glfwCreateWindow failed!" << std::endl;
         glfwTerminate();
         return -1;
     }
 
     /* Make the window's context current */
-    mainWindow.makeContextCurrent();
+    GrFramework::mainWindow.makeContextCurrent();
     //glfwMakeContextCurrent(window);
 
 
@@ -84,12 +87,12 @@ int main(void) {
 
     glm::ivec2 g_WindowSize(640, 480);
 
-    mainWindow.init();
+    GrFramework::mainWindow.init();
 
     std::string vertexShaderCodeStr(vertexShaderCode);
     std::string fragmentShaderCodeStr(fragmentShaderCode);
 
-    ShaderProgram shaderProgram(vertexShaderCodeStr, fragmentShaderCodeStr);
+    GrFramework::ShaderProgram shaderProgram(vertexShaderCodeStr, fragmentShaderCodeStr);
 
     if(!shaderProgram.isCompiled()) {
         std::cerr << "Can not create shader program!" << std::endl;
@@ -102,7 +105,7 @@ int main(void) {
         -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f
     };
 
-    VertexArray vao(trVertices);
+    GrFramework::VertexArray vao(trVertices);
 
     //--------------------------------------Textures----------------------------------------//
 
@@ -114,7 +117,7 @@ int main(void) {
         -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // Top Left
     };
 
-    Texture tex(texVertices, "../src/BoxTexture.png");
+    GrFramework::Texture tex(texVertices, "../src/BoxTexture.png");
     //--------------------------------------------------------------------------------------//
 
     //------------------------------------Button-------------------------------------//
@@ -127,16 +130,18 @@ int main(void) {
         0.6f, 0.8f, 0.0f,    1.0f, 1.0f, 1.0f,    0.0f, 1.0f  // Top Left
     };
 
-    ElemWidget* el = nullptr;
+    GrFramework::ElemWidget* el = nullptr;
 
-    Button but(butVertices, "../src/BoxTexture.png", el, checkOnclickFunc);
+    GrFramework::Button but(butVertices, "../src/BoxTexture.png", el, checkOnclickFunc);
+
+    (*GrFramework::mainWindow.manager_).regWidget(&but);
 
     //-------------------------------------------------------------------------------//
 
 
     /* Loop until the user closes the window */
-    while (!mainWindow.shouldClose()) {
-        mainWindow.clear();
+    while (!GrFramework::mainWindow.shouldClose()) {
+        GrFramework::mainWindow.clear();
 
         shaderProgram.use();
 
@@ -151,11 +156,15 @@ int main(void) {
 
         tex.draw();
 
-        mainWindow.update();
+        GrFramework::mainWindow.draw();
+
+        GrFramework::mainWindow.update();
 
 
         /* Poll for and process events */
         glfwPollEvents();
+
+        GrFramework::mainWindow.manager_->handleEvents();
     }
 
     glfwTerminate();

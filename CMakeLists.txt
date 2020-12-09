@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 
-set(PROJECT_NAME WindowManager)
-set(CXX_FLAGS "-Wall -Wextra")
+set(PROJECT_NAME GrFramework)
+set(CXX_FLAGS "-Wall -Wextra -g")
 
 project(${PROJECT_NAME})
 

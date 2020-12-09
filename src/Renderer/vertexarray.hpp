@@ -6,6 +6,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+namespace GrFramework {
+
 class VertexArray {
     GLuint vao_;
 
@@ -29,5 +31,7 @@ public:
     void draw();
 
 };
+
+}
 
 #endif // VERTEXARRAY_HPP

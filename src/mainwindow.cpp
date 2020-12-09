@@ -1,6 +1,10 @@
 #include <iostream>
 
+//#include "event.hpp"
+
 #include "mainwindow.hpp"
+
+namespace GrFramework {
 
 MainWindow mainWindow(500, 500, "Main window", nullptr, nullptr);
 
@@ -9,7 +13,7 @@ MainWindow::MainWindow(int          width,
                        const char*  title,
                        GLFWmonitor* monitor,
                        GLFWwindow*  share) :
-    WindowManager() {
+    WindowManager(0, 0, width, height) {
 
 
     // Initialize the library
@@ -24,6 +28,8 @@ MainWindow::MainWindow(int          width,
         return;
 
     glfwSetWindowSizeCallback(window_, glfwWindowSizeCallback);
+    glfwSetCursorPosCallback(window_, cursorPositionCallback);
+    glfwSetMouseButtonCallback(window_, mouseButtonCallback);
 }
 
 void MainWindow::init() {
@@ -69,7 +75,9 @@ void glfwWindowSizeCallback(GLFWwindow* window, int width, int height) {
         mainWindow.setWidth(width);
         mainWindow.setHeigth(height);
 
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
+        $;
         glViewport(0, 0, width, height);
     }
+}
+
 }
